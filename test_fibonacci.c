@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "fibonacci.h"
 // Not sure if this is what you want, but I'm not sure
 //how to do it otherwise for test cases.
@@ -10,20 +11,33 @@
 
 // helper func to check if fib(index) matches what we expect
 // returns 0 if it passes, 1 if it fails
-static int test_single_fib(int index, int expected)
+static int test_single_fib(int index, const char* expected)
 {
-    int actual;
+    const char* actual = fibonacci_calc(index);
 
-    actual = fibonacci_calc(index);
+    if (!actual) {
+        if (!expected) {
+            printf("Test PASSED for fib(%d): got NULL as expected.\n", index);
+            return 0;
+        }
+        printf("Test FAILED for fib(%d): expected %s, got NULL.\n",
+               index, expected);
+        return 1;
+    }
 
-    if (actual != expected)
-    {
-        printf("Test FAILED for fib(%d): expected %d, got %d.\n",
+    if (!expected) {
+        printf("Test FAILED for fib(%d): expected NULL, got %s.\n",
+               index, actual);
+        return 1;
+    }
+
+    if (strcmp(actual, expected) != 0) {
+        printf("Test FAILED for fib(%d): expected %s, got %s.\n",
                index, expected, actual);
         return 1;
     }
 
-    printf("Test PASSED for fib(%d): got %d.\n", index, actual);
+    printf("Test PASSED for fib(%d): got %s.\n", index, actual);
     return 0;
 }
 
@@ -43,19 +57,19 @@ int main(void)
     }
 
     // run through some basic fibo nums we know are right
-    any_failures += test_single_fib(0, 0);
-    any_failures += test_single_fib(1, 1);
-    any_failures += test_single_fib(2, 1);
-    any_failures += test_single_fib(3, 2);
-    any_failures += test_single_fib(4, 3);
-    any_failures += test_single_fib(5, 5);
-    any_failures += test_single_fib(6, 8);
-    any_failures += test_single_fib(7, 13);
-    any_failures += test_single_fib(10, 55);
+    any_failures += test_single_fib(0, "0");
+    any_failures += test_single_fib(1, "1");
+    any_failures += test_single_fib(2, "1");
+    any_failures += test_single_fib(3, "2");
+    any_failures += test_single_fib(4, "3");
+    any_failures += test_single_fib(5, "5");
+    any_failures += test_single_fib(6, "8");
+    any_failures += test_single_fib(7, "13");
+    any_failures += test_single_fib(10, "55");
 
     // try some bad inputs to make sure we handle them correctly
-    any_failures += test_single_fib(-1, -1);
-    any_failures += test_single_fib(51, -1);
+    any_failures += test_single_fib(-1, NULL);
+    any_failures += test_single_fib(51, "20365011074");
 
     if (any_failures == 0)
     {
